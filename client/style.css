@@ -1,4 +1,23 @@
 
-img {
-    max-height: 500px;
+html, body {
+
+}
+
+.layer {
+    border: dashed 1px black;
+}
+
+ul.images-container {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+
+.images-container li {
+    display: inline;
+    list-style: none;
+}
+
+.images-container li img {
+    height: 150px;
 }
