@@ -35,9 +35,14 @@ ul.images-container {
 
 .images-container li img {
     height: 90px;
+    margin: 2px;
     cursor: pointer;
 }
 
 .images-container li img:hover {
-    border: solid 1px black;
+
+}
+
+*:focus {
+    outline: none;
 }

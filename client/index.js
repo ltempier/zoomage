@@ -1,7 +1,8 @@
 "use strict";
 
 $(document).ready(function () {
-    var workspace = new Zoomage('workspace', function (gifDataUrl) {
+
+    var workspace = new Zoomage('zoomage', function (gifDataUrl) {
         $('#gif-result').attr('src', gifDataUrl)
     });
 

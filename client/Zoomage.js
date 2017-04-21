@@ -110,7 +110,8 @@ Zoomage.prototype.renderGif = function () {
 
     this._gif = new GIF({
         workers: 2,
-        quality: 10
+        quality: 10,
+        workerScript:'./lib/gif.worker.js'
     });
 
     this._images.forEach(function (img) {
