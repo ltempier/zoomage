@@ -1,6 +1,6 @@
 "use strict";
 
-var Zoomage = function (id) {
+var Zoomage = function (id, onGif) {
     this._id = id.charAt(0) === '#' ? id : '#' + id;
     this._size = {
         width: 0,
@@ -9,7 +9,10 @@ var Zoomage = function (id) {
     this._mousePos = null;
     this._zoom = 0.8;
     this._images = [];
+
     this._gif = null;
+    this._gifDataUrl = null;
+    this._onGif = onGif;
 
     this.$div = $(this._id);
     this.$canvas = $('<canvas></canvas>');
@@ -21,13 +24,8 @@ var Zoomage = function (id) {
 
 Zoomage.prototype.init = function () {
 
-    var $canvasContainer = $('<div></div>').css('position', 'relative');
+    var $canvasContainer = $('<div class="canvas-container"></div>');
     $canvasContainer.append(this.$canvas);
-
-    this.$layer.css('position', 'absolute');
-    this.$layer.css('top', 0);
-    this.$layer.css('left', 0);
-
     $canvasContainer.append(this.$layer);
 
     this.$div.append($canvasContainer);
@@ -51,6 +49,7 @@ Zoomage.prototype.initLayer = function () {
     }, false);
 
     c.addEventListener("click", this.crop.bind(this), false);
+
     c.addEventListener("mousewheel", MouseWheelHandler, false); // IE9, Chrome, Safari, Opera
     c.addEventListener("DOMMouseScroll", MouseWheelHandler, false); // Firefox
 
@@ -64,17 +63,41 @@ Zoomage.prototype.initLayer = function () {
 
 
 Zoomage.prototype.renderLayer = function () {
-    var rectSize = {
-        width: this._size.width * this._zoom,
-        height: this._size.height * this._zoom
-    };
+
+    var rect = this.getRectLayer();
+
     var c = this.$layer[0];
     var ctx = c.getContext("2d");
     ctx.clearRect(0, 0, c.width, c.height);
     ctx.beginPath();
-    ctx.rect(this._mousePos.x - rectSize.width / 2, this._mousePos.y - rectSize.height / 2, rectSize.width, rectSize.height);
+    ctx.rect(rect.x, rect.y, rect.width, rect.height);
     ctx.stroke();
     ctx.closePath();
+};
+
+
+Zoomage.prototype.getRectLayer = function () {
+    var rectSize = {
+        width: this._size.width * this._zoom,
+        height: this._size.height * this._zoom
+    };
+    var rect = {
+        x: this._mousePos.x - rectSize.width / 2,
+        y: this._mousePos.y - rectSize.height / 2,
+        width: rectSize.width,
+        height: rectSize.height
+    };
+
+    if (rect.x < 0)
+        rect.x = 0;
+    if (rect.y < 0)
+        rect.y = 0;
+    if (rect.x + rect.width >= this._size.width)
+        rect.x = this._size.width - rect.width;
+    if (rect.y + rect.height >= this._size.height)
+        rect.y = this._size.height - rect.height;
+
+    return rect
 };
 
 Zoomage.prototype.renderGif = function () {
@@ -82,7 +105,6 @@ Zoomage.prototype.renderGif = function () {
         return;
 
     var self = this;
-
     if (this._gif)
         this._gif.abort();
 
@@ -101,7 +123,9 @@ Zoomage.prototype.renderGif = function () {
     });
 
     this._gif.on('finished', function (blob) {
-        $('#gif-result').attr('src', window.URL.createObjectURL(blob))
+        self._gifDataUrl = window.URL.createObjectURL(blob);
+        if (self._onGif)
+            self._onGif(self._gifDataUrl)
     });
     this._gif.render();
 };
@@ -135,23 +159,12 @@ Zoomage.prototype.crop = function () {
 
     var c = this.$canvas[0];
     var ctx = c.getContext("2d");
-    var rectSize = {
-        width: this._size.width * this._zoom,
-        height: this._size.height * this._zoom
-    };
-
-    var cropRect = {
-        x: this._mousePos.x - rectSize.width / 2,
-        y: this._mousePos.y - rectSize.height / 2,
-        width: rectSize.width,
-        height: rectSize.height
-    };
-
+    var cropRect = this.getRectLayer();
     var imgData = ctx.getImageData(cropRect.x, cropRect.y, cropRect.width, cropRect.height);
 
     var buffer = document.createElement("canvas");
-    buffer.width = rectSize.width;
-    buffer.height = rectSize.height;
+    buffer.width = cropRect.width;
+    buffer.height = cropRect.height;
     var bufferCtx = buffer.getContext("2d");
     bufferCtx.putImageData(imgData, 0, 0);
 
@@ -187,14 +200,17 @@ Zoomage.prototype.pushImage = function (dataUrl, size) {
 
 Zoomage.prototype.setImage = function (dataUrl) {
     this._images = [];
+    this.$images.empty();
+    if (this._onGif)
+        this._onGif('');
+
     var self = this;
     var img = new Image();
 
-    var maxWidth = $(window).width();
-    var maxHeight = $(window).height();
+    var maxWidth = $(window).width() / 2;
+    var maxHeight = $(window).height() / 2;
 
     img.onload = function () {
-
         var coef = 1;
         if (img.width > maxWidth)
             coef = (maxWidth / img.width) < coef ? (maxWidth / img.width) : coef;
@@ -207,6 +223,4 @@ Zoomage.prototype.setImage = function (dataUrl) {
         })
     };
     img.src = dataUrl;
-
-
 };

@@ -1,9 +1,24 @@
 
 html, body {
-    background-color: azure;
+    margin: 0;
+    padding: 0;
+    background-color: white;
 }
 
-.layer {
+.container {
+    text-align: center;
+}
+
+.canvas-container {
+    position: relative;
+    display: inline-block;
+    margin: 5px;
+}
+
+canvas.layer {
+    position: absolute;
+    top: -1px;
+    left: -1px;
     border: dashed 1px black;
 }
 
@@ -19,5 +34,10 @@ ul.images-container {
 }
 
 .images-container li img {
-    height: 150px;
+    height: 90px;
+    cursor: pointer;
+}
+
+.images-container li img:hover {
+    border: solid 1px black;
 }
