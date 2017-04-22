@@ -1,6 +1,6 @@
 "use strict";
 
-var Zoomage = function (id, onGif) {
+var Zoomage = function (id, onNewGif) {
     this._id = id.charAt(0) === '#' ? id : '#' + id;
     this._size = {
         width: 0,
@@ -9,10 +9,11 @@ var Zoomage = function (id, onGif) {
     this._mousePos = null;
     this._zoom = 0.8;
     this._images = [];
+    this._frameIndex = 0;
 
     this._gif = null;
     this._gifDataUrl = null;
-    this._onGif = onGif;
+    this._onGif = onNewGif;
 
     this.$div = $(this._id);
     this.$canvas = $('<canvas></canvas>');
@@ -109,18 +110,22 @@ Zoomage.prototype.renderGif = function () {
         this._gif.abort();
 
     this._gif = new GIF({
-        workers: 2,
+        workers: 5,
         quality: 10,
-        workerScript:'./lib/gif.worker.js'
+        workerScript: './lib/gif.worker.js',
+        background: '#ffffff',
+        //transparent: true
     });
 
-    this._images.forEach(function (img) {
-        var buffer = document.createElement("canvas");
-        buffer.width = self._size.width;
-        buffer.height = self._size.height;
-        var bufferCtx = buffer.getContext("2d");
-        bufferCtx.drawImage(img, 0, 0, self._size.width, self._size.height);
-        self._gif.addFrame(buffer);
+    this._images.forEach(function (image) {
+        if (image && image.img) {
+            var buffer = document.createElement("canvas");
+            buffer.width = self._size.width;
+            buffer.height = self._size.height;
+            var bufferCtx = buffer.getContext("2d");
+            bufferCtx.drawImage(image.img, 0, 0, self._size.width, self._size.height);
+            self._gif.addFrame(buffer);
+        }
     });
 
     this._gif.on('finished', function (blob) {
@@ -169,16 +174,20 @@ Zoomage.prototype.crop = function () {
     var bufferCtx = buffer.getContext("2d");
     bufferCtx.putImageData(imgData, 0, 0);
 
-    this.pushImage(buffer.toDataURL("image/png"), this._size)
+    this.pushFrame(buffer.toDataURL("image/png"), this._size)
 };
 
-Zoomage.prototype.pushImage = function (dataUrl, size) {
+Zoomage.prototype.pushFrame = function (dataUrl, size) {
 
     var self = this;
+    var key = this._frameIndex++;
+
     var c = this.$canvas[0];
     var ctx = c.getContext("2d");
-
     var img = new Image();
+
+
+
     img.onload = function () {
         size = size || {
                 width: img.width,
@@ -186,18 +195,36 @@ Zoomage.prototype.pushImage = function (dataUrl, size) {
             };
         self.setSize(size.width, size.height);
         ctx.drawImage(img, 0, 0, size.width, size.height);
+
+
+        var $li = $('<li></li>').data('frame-key', key);
+        var $image = $('<img/>').attr('src', dataUrl);
+        $li.html($image);
+        $li.on('click', function () {
+            self.removeFrame(key);
+            $(this).remove()
+        });
+
+        self._images.push({
+            key: key,
+            img: img
+        });
+        self.$images.append($li);
+        self.renderGif()
     };
     img.src = dataUrl;
-
-    this._images.push(img);
-
-    var $li = $('<li></li>');
-    var $image = $('<img/>').attr('src', dataUrl);
-    $li.html($image);
-    this.$images.append($li);
-
-    this.renderGif()
 };
+
+Zoomage.prototype.removeFrame = function (key) {
+    var index = this._images.findIndex(function (image) {
+        return image.key === key
+    });
+    if (index >= 0) {
+        this._images.splice(index, 1);
+        this.renderGif()
+    }
+};
+
 
 Zoomage.prototype.setImage = function (dataUrl) {
     this._images = [];
@@ -208,8 +235,8 @@ Zoomage.prototype.setImage = function (dataUrl) {
     var self = this;
     var img = new Image();
 
-    var maxWidth = $(window).width() / 2;
-    var maxHeight = $(window).height() / 2;
+    var maxWidth = 500;
+    var maxHeight = 500;
 
     img.onload = function () {
         var coef = 1;
@@ -218,7 +245,7 @@ Zoomage.prototype.setImage = function (dataUrl) {
         if (img.height > maxHeight)
             coef = (maxHeight / img.height) < coef ? (maxHeight / img.height) : coef;
 
-        self.pushImage(dataUrl, {
+        self.pushFrame(dataUrl, {
             width: img.width * coef,
             height: img.height * coef
         })
