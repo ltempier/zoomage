@@ -102,8 +102,11 @@ Zoomage.prototype.getRectLayer = function () {
 };
 
 Zoomage.prototype.renderGif = function () {
-    if (this._images.length <= 1)
+    if (this._images.length <= 1) {
+        if (this._onGif)
+            this._onGif('');
         return;
+    }
 
     var self = this;
     if (this._gif)
@@ -114,7 +117,6 @@ Zoomage.prototype.renderGif = function () {
         quality: 10,
         workerScript: './lib/gif.worker.js',
         background: '#ffffff'
-        //transparent: true
     });
 
     this._images.forEach(function (image) {
@@ -155,8 +157,6 @@ Zoomage.prototype.setZoom = function (zoom) {
 };
 
 Zoomage.prototype.crop = function () {
-    if (this._images.length === 0)
-        return;
 
     var c = this.$canvas[0];
     var ctx = c.getContext("2d");
