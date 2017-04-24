@@ -32,12 +32,36 @@ body {
     text-align: center;
 }
 
-.box{
+.box {
     padding: 10px;
 }
 
-/*input file*/
+.btn-download {
+    font-size: 1.25em;
+    font-weight: 700;
+    padding: 0.625rem 1.25rem;
+    color: white;
+    background-color: black;
+    border: 0;
+}
 
+.btn-download {
+    display: none;
+    text-decoration: none;
+    font-size: 1.25em;
+    font-weight: 700;
+    padding: 0.625rem 1.25rem;
+    color: white;
+    background-color: black;
+    border: 0;
+    cursor: pointer;
+}
+
+.btn-download:hover {
+    background-color: #2d46ff;
+}
+
+/*input file*/
 .inputfile {
     width: 0.1px;
     height: 0.1px;

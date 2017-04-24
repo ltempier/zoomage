@@ -113,7 +113,7 @@ Zoomage.prototype.renderGif = function () {
         workers: 5,
         quality: 10,
         workerScript: './lib/gif.worker.js',
-        background: '#ffffff',
+        background: '#ffffff'
         //transparent: true
     });
 
@@ -187,7 +187,6 @@ Zoomage.prototype.pushFrame = function (dataUrl, size) {
     var img = new Image();
 
 
-
     img.onload = function () {
         size = size || {
                 width: img.width,
@@ -235,8 +234,14 @@ Zoomage.prototype.setImage = function (dataUrl) {
     var self = this;
     var img = new Image();
 
-    var maxWidth = 500;
-    var maxHeight = 500;
+
+    var maxWidth = $(document).width() - 50;
+    var maxHeight = $(document).height() - 50;
+
+    if (maxWidth > 500)
+        maxWidth = 500;
+    if (maxHeight > 500)
+        maxHeight = 500;
 
     img.onload = function () {
         var coef = 1;
