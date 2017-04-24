@@ -12,6 +12,10 @@ body {
     height: 100%;
 }
 
+* {
+    outline: none;
+}
+
 .underlay {
     position: fixed;
     top: 0;
@@ -19,89 +23,7 @@ body {
     width: 100%;
     height: 100%;
     z-index: -10;
-}
-
-.fun-1 {
-
-    background: radial-gradient(
-            yellow,
-            yellow 50%,
-            transparent 50%,
-            transparent 100%
-    ),
-    radial-gradient(
-            cyan,
-            cyan 50%,
-            transparent 50%,
-            transparent 100%
-    ),
-    radial-gradient(
-            magenta,
-            magenta 40%,
-            transparent 40%,
-            transparent 100%
-    ), floralwhite;
-
-    background-size: 8em 8em, 6em 6em, 2em 2em;
-
-    background-blend-mode: multiply;
-    background-position: 0 0, -33% -33%, -200% -200%;
-}
-
-.fun {
-    background-blend-mode: screen;
-    background: linear-gradient(
-            limegreen,
-            transparent
-    ),
-    linear-gradient(
-            90deg,
-            skyblue,
-            transparent
-    ),
-    linear-gradient(
-            -90deg,
-            coral,
-            transparent
-    );
-}
-
-.fun-2 {
-    background: repeating-linear-gradient(
-            50deg,
-            #F7A37B,
-            #F7A37B 1em,
-            #FFDEA8 1em,
-            #FFDEA8 2em,
-            #D0E4B0 2em,
-            #D0E4B0 3em,
-            #7CC5D0 3em,
-            #7CC5D0 4em,
-            #00A2E1 4em,
-            #00A2E1 5em,
-            #0085C8 5em,
-            #0085C8 6em
-    ),
-    repeating-linear-gradient(
-            -50deg,
-            #F7A37B,
-            #F7A37B 1em,
-            #FFDEA8 1em,
-            #FFDEA8 2em,
-            #D0E4B0 2em,
-            #D0E4B0 3em,
-            #7CC5D0 3em,
-            #7CC5D0 4em,
-            #00A2E1 4em,
-            #00A2E1 5em,
-            #0085C8 5em,
-            #0085C8 6em
-    );
-    background-blend-mode: multiply;
-}
-
-*:focus {
-    outline: none;
+    background-image: url('static/menphis_3.jpg');
 }
 
 .container {
@@ -121,9 +43,9 @@ canvas {
 
 canvas.layer {
     position: absolute;
-    top: -1px;
-    left: -1px;
-    border: dashed 1px black;
+    top: -3px;
+    left: -3px;
+    border: solid 3px black;
     background-color: transparent !important;
 }
 
@@ -143,8 +65,10 @@ ul.images-container {
     height: 90px;
     margin: 2px;
     cursor: pointer;
+    border: solid 3px black;
 }
 
 .images-container li img:hover {
-    opacity: 0.8;
+    border-color: red;
+    opacity: 0.95;
 }
