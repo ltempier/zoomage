@@ -1,13 +1,11 @@
 
 ### zoomage
 
-Make zoomable gif from image
+Simple make zoomable gif from image
 
 Visit [http://www.gifplease.com/][1]
 
-Thanks to [jnordberg][2] for [gif.js][3]
-
-Output example:
+Thanks [jnordberg][2] for [gif.js][3]
 
 ![gifplease.gif](https://github.com/ltempier/zoomage/raw/master/gifplease.gif)
 
