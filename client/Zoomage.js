@@ -119,12 +119,7 @@ Zoomage.prototype.renderGif = function () {
 
     this._images.forEach(function (image) {
         if (image && image.img) {
-            var buffer = document.createElement("canvas");
-            buffer.width = self._size.width;
-            buffer.height = self._size.height;
-            var bufferCtx = buffer.getContext("2d");
-            bufferCtx.drawImage(image.img, 0, 0, self._size.width, self._size.height);
-            self._gif.addFrame(buffer);
+            self._gif.addFrame(image.img);
         }
     });
 
@@ -184,8 +179,8 @@ Zoomage.prototype.pushFrame = function (dataUrl, size) {
 
     var c = this.$canvas[0];
     var ctx = c.getContext("2d");
-    var img = new Image();
 
+    var img = new Image();
 
     img.onload = function () {
         size = size || {
@@ -193,11 +188,13 @@ Zoomage.prototype.pushFrame = function (dataUrl, size) {
                 height: img.height
             };
         self.setSize(size.width, size.height);
+
+        ctx.fillStyle = "white"; //white backgroud
+        ctx.fillRect(0, 0, size.width, size.height);
         ctx.drawImage(img, 0, 0, size.width, size.height);
 
-
         var $li = $('<li></li>').data('frame-key', key);
-        var $image = $('<img/>').attr('src', dataUrl);
+        var $image = $('<img/>').attr('src', c.toDataURL("image/png"));
         $li.html($image);
         $li.on('click', function () {
             self.removeFrame(key);
@@ -206,7 +203,7 @@ Zoomage.prototype.pushFrame = function (dataUrl, size) {
 
         self._images.push({
             key: key,
-            img: img
+            img: ctx.getImageData(0, 0, size.width, size.height)
         });
         self.$images.append($li);
         self.renderGif()
