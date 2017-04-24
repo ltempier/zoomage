@@ -10,27 +10,44 @@ var Zoomage = function (id, onNewGif) {
     this._zoom = 0.8;
     this._images = [];
     this._frameIndex = 0;
+    this._gifDelay = 300;
+    this._originImg = null;
 
     this._gif = null;
     this._gifDataUrl = null;
     this._onGif = onNewGif;
 
-    this.$div = $(this._id);
+    this.$div = $(this._id).addClass('zoomage-container');
     this.$canvas = $('<canvas></canvas>');
     this.$layer = $('<canvas class="layer"></canvas>');
+    this.$slider = $('<input type="range" class="delay-slider" min="-500" max="-100" step="10" data-orientation="vertical">').attr('value', -this._gifDelay);
     this.$images = $('<ul class="images-container"></ul>');
 
     this.init();
 };
 
+Zoomage.prototype.setGifDelay = function (delay) {
+
+    console.log('set delay', delay);
+    this._gifDelay = delay;
+    this.renderGif()
+};
+
 Zoomage.prototype.init = function () {
 
+    var self = this;
     var $canvasContainer = $('<div class="canvas-container"></div>');
     $canvasContainer.append(this.$canvas);
     $canvasContainer.append(this.$layer);
 
     this.$div.append($canvasContainer);
     this.$div.append(this.$images);
+
+    this.$slider.on('change', function (e) {
+        self.setGifDelay(Math.abs(e.target.value))
+    });
+
+    this.$div.append(this.$slider);
 
     this.setSize(500, 500);
     this.initLayer()
@@ -115,13 +132,13 @@ Zoomage.prototype.renderGif = function () {
     this._gif = new GIF({
         workers: 5,
         quality: 10,
-        workerScript: './lib/gif.worker.js',
+        workerScript: './lib/gifjs/gif.worker.js',
         background: '#ffffff'
     });
 
     this._images.forEach(function (image) {
         if (image && image.img) {
-            self._gif.addFrame(image.img);
+            self._gif.addFrame(image.img, {delay: self._gifDelay});
         }
     });
 
@@ -157,6 +174,8 @@ Zoomage.prototype.setZoom = function (zoom) {
 };
 
 Zoomage.prototype.crop = function () {
+    if (this._originImg === null)
+        return;
 
     var c = this.$canvas[0];
     var ctx = c.getContext("2d");
@@ -225,6 +244,8 @@ Zoomage.prototype.removeFrame = function (key) {
 Zoomage.prototype.setImage = function (dataUrl) {
     this._images = [];
     this.$images.empty();
+    this._originImg = dataUrl;
+
     if (this._onGif)
         this._onGif('');
 

@@ -91,6 +91,11 @@ body {
 }
 
 /*Zoomage*/
+
+.zoomage-container{
+    padding-bottom: 15px;
+}
+
 .canvas-container {
     position: relative;
     display: inline-block;
@@ -130,4 +135,21 @@ ul.images-container {
 .images-container li img:hover {
     border-color: red;
     opacity: 0.95;
+}
+
+.delay-slider {
+    -webkit-appearance: none;
+    background-color: black;
+    width: 300px;
+    height: 4px;
+}
+
+.delay-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border: none;
+    height: 20px;
+    width: 20px;
+    border-radius: 50%;
+    background: yellow;
+    border: solid 4px black;
 }
