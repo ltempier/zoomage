@@ -10,6 +10,8 @@ html, body {
 
 body {
     height: 100%;
+    font-family: Avenir, 'Helvetica Neue', 'Lato', 'Segoe UI', Helvetica, Arial, sans-serif;
+    color: #4b0f31;
 }
 
 * {
@@ -30,11 +32,40 @@ body {
     text-align: center;
 }
 
+.box{
+    padding: 10px;
+}
+
+/*input file*/
+
+.inputfile {
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+    position: absolute;
+    z-index: -1;
+}
+
+.inputfile + label {
+    font-size: 1.25em;
+    font-weight: 700;
+    color: white;
+    background-color: black;
+    display: inline-block;
+    padding: 0.625rem 1.25rem;
+    cursor: pointer;
+}
+
+.inputfile:focus + label,
+.inputfile + label:hover {
+    background-color: red;
+}
+
 /*Zoomage*/
 .canvas-container {
     position: relative;
     display: inline-block;
-    margin: 5px;
 }
 
 canvas {
