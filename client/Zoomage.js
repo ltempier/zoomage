@@ -39,6 +39,7 @@ Zoomage.prototype.init = function () {
     var self = this;
     var maxSize = this.getMaxSize();
 
+    this.$speedSlider.hide();
     this.$speedSlider.on('change', function (e) {
         self.setGifDelay(Math.abs(e.target.value))
     });
@@ -50,6 +51,7 @@ Zoomage.prototype.init = function () {
     var $layerContainer = $('<div class="layer-container"></div>');
     $layerContainer.append(this.$layer);
     $layerContainer.append(this.$zoomSlider);
+
 
     $canvasContainer.append(this.$canvas);
     $canvasContainer.append($layerContainer);
@@ -135,6 +137,7 @@ Zoomage.prototype.renderGif = function () {
             this._onGif('');
         return;
     }
+    this.$speedSlider.show();
 
     var self = this;
     if (this._gif)
@@ -182,7 +185,7 @@ Zoomage.prototype.setSize = function (width, height) {
     var zoomSliderWidth = height - 50;
     this.$zoomSlider.css('width', zoomSliderWidth);
     this.$zoomSlider.css('top', (zoomSliderWidth / 2) + 25);
-    this.$zoomSlider.css('left', (-zoomSliderWidth / 2) + width + 25);
+    this.$zoomSlider.css('left', (-zoomSliderWidth / 2) + width - 25);
 };
 
 Zoomage.prototype.setZoom = function (zoom) {
