@@ -28,7 +28,7 @@ var Zoomage = function (id, onNewGif) {
     this.$canvas = $('<canvas></canvas>');
     this.$layer = $('<canvas class="layer"></canvas>');
     this.$speedSlider = $('<input type="range" class="slider delay-slider" min="-500" max="-100" step="10">').attr('value', -this._gifDelay);
-    this.$zoomSlider = $('<input type="range" class="slider zoom-slider vertical" min="0.1" max="0.9" step="0.1">').attr('value', this._zoom);
+    this.$zoomSlider = $('<input type="range" class="slider zoom-slider vertical" min="0.05" max="0.9" step="0.1">').attr('value', this._zoom);
     this.$images = $('<ul class="images-container"></ul>');
 
     this.init();
@@ -82,6 +82,7 @@ Zoomage.prototype.initLayer = function () {
 
     c.addEventListener("click", this.crop.bind(this), false);
 
+    // IF scroll zoom
     //c.addEventListener("mousewheel", MouseWheelHandler, false); // IE9, Chrome, Safari, Opera
     //c.addEventListener("DOMMouseScroll", MouseWheelHandler, false); // Firefox
     //function MouseWheelHandler(e) {
@@ -181,7 +182,7 @@ Zoomage.prototype.setSize = function (width, height) {
     var zoomSliderWidth = height - 50;
     this.$zoomSlider.css('width', zoomSliderWidth);
     this.$zoomSlider.css('top', (zoomSliderWidth / 2) + 25);
-    this.$zoomSlider.css('left', (-zoomSliderWidth / 2) + width + 20);
+    this.$zoomSlider.css('left', (-zoomSliderWidth / 2) + width + 25);
 };
 
 Zoomage.prototype.setZoom = function (zoom) {
