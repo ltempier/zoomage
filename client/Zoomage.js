@@ -1,6 +1,10 @@
 "use strict";
 
 var Zoomage = function (id, onNewGif) {
+
+    if (!window.jQuery)
+        throw new Error('Jquery is required');
+
     this._id = id.charAt(0) === '#' ? id : '#' + id;
     this._size = {
         width: 0,
@@ -45,7 +49,7 @@ Zoomage.prototype.init = function () {
     var $canvasContainer = $('<div class="canvas-container"></div>');
     var $layerContainer = $('<div class="layer-container"></div>');
     $layerContainer.append(this.$layer);
-    //$layerContainer.append(this.$zoomSlider);
+    $layerContainer.append(this.$zoomSlider);
 
     $canvasContainer.append(this.$canvas);
     $canvasContainer.append($layerContainer);
@@ -78,15 +82,14 @@ Zoomage.prototype.initLayer = function () {
 
     c.addEventListener("click", this.crop.bind(this), false);
 
-    c.addEventListener("mousewheel", MouseWheelHandler, false); // IE9, Chrome, Safari, Opera
-    c.addEventListener("DOMMouseScroll", MouseWheelHandler, false); // Firefox
-
-    function MouseWheelHandler(e) {
-        var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail))) / 20;
-        var zoom = self._zoom - delta;
-        if (zoom > 0 && zoom < 1)
-            self.setZoom(zoom);
-    }
+    //c.addEventListener("mousewheel", MouseWheelHandler, false); // IE9, Chrome, Safari, Opera
+    //c.addEventListener("DOMMouseScroll", MouseWheelHandler, false); // Firefox
+    //function MouseWheelHandler(e) {
+    //    var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail))) / 20;
+    //    var zoom = self._zoom - delta;
+    //    if (zoom > 0 && zoom < 1)
+    //        self.setZoom(zoom);
+    //}
 };
 
 Zoomage.prototype.renderLayer = function () {
@@ -173,6 +176,12 @@ Zoomage.prototype.setSize = function (width, height) {
             x: width / 2,
             y: height / 2
         };
+
+    this.$speedSlider.css('width', width - 50);
+    var zoomSliderWidth = height - 50;
+    this.$zoomSlider.css('width', zoomSliderWidth);
+    this.$zoomSlider.css('top', (zoomSliderWidth / 2) + 25);
+    this.$zoomSlider.css('left', (-zoomSliderWidth / 2) + width + 20);
 };
 
 Zoomage.prototype.setZoom = function (zoom) {
@@ -281,9 +290,6 @@ Zoomage.prototype.setImage = function (dataUrl) {
         if (img.height > maxSize.height)
             coef = (maxSize.height / img.height) < coef ? (maxSize.height / img.height) : coef;
 
-        //self.$speedSlider.css('width', img.width * coef - 50);
-        //self.$zoomSlider.css('width', img.height * coef - 50);
-        //self.$zoomSlider.css('top', -(img.height * coef - 50));
 
         self.pushFrame(dataUrl, {
             width: img.width * coef,
