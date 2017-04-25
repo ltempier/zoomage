@@ -13,6 +13,9 @@ var Zoomage = function (id, onNewGif) {
     this._gifDelay = 300;
     this._originImg = null;
 
+    this._maxWidth = 500;
+    this._maxHeight = 500;
+
     this._gif = null;
     this._gifDataUrl = null;
     this._onGif = onNewGif;
@@ -20,38 +23,44 @@ var Zoomage = function (id, onNewGif) {
     this.$div = $(this._id).addClass('zoomage-container');
     this.$canvas = $('<canvas></canvas>');
     this.$layer = $('<canvas class="layer"></canvas>');
-    this.$slider = $('<input type="range" class="delay-slider" min="-500" max="-100" step="10" data-orientation="vertical">').attr('value', -this._gifDelay);
+    this.$speedSlider = $('<input type="range" class="slider delay-slider" min="-500" max="-100" step="10">').attr('value', -this._gifDelay);
+    this.$zoomSlider = $('<input type="range" class="slider zoom-slider" min="0.1" max="0.9" step="0.1">').attr('value', this._zoom);
     this.$images = $('<ul class="images-container"></ul>');
 
     this.init();
 };
 
-Zoomage.prototype.setGifDelay = function (delay) {
-
-    console.log('set delay', delay);
-    this._gifDelay = delay;
-    this.renderGif()
-};
-
 Zoomage.prototype.init = function () {
 
     var self = this;
+    var maxSize = this.getMaxSize();
+
     var $canvasContainer = $('<div class="canvas-container"></div>');
     $canvasContainer.append(this.$canvas);
     $canvasContainer.append(this.$layer);
 
     this.$div.append($canvasContainer);
+
     this.$div.append(this.$images);
 
-    this.$slider.on('change', function (e) {
+    this.$speedSlider.on('change', function (e) {
         self.setGifDelay(Math.abs(e.target.value))
     });
+    this.$zoomSlider.on('change', function (e) {
+        self.setZoom(Math.abs(e.target.value))
+    });
 
-    this.$div.append(this.$slider);
+    this.$div.append(this.$speedSlider);
 
-    this.setSize(500, 500);
+    this.setSize(maxSize.width, maxSize.height);
     this.initLayer()
 };
+
+Zoomage.prototype.setGifDelay = function (delay) {
+    this._gifDelay = delay;
+    this.renderGif()
+};
+
 
 Zoomage.prototype.initLayer = function () {
     var self = this;
@@ -79,11 +88,8 @@ Zoomage.prototype.initLayer = function () {
     }
 };
 
-
 Zoomage.prototype.renderLayer = function () {
-
     var rect = this.getRectLayer();
-
     var c = this.$layer[0];
     var ctx = c.getContext("2d");
     ctx.clearRect(0, 0, c.width, c.height);
@@ -240,6 +246,19 @@ Zoomage.prototype.removeFrame = function (key) {
     }
 };
 
+Zoomage.prototype.getMaxSize = function (margin) {
+    margin = margin >= 0 ? margin : 50;
+    var maxWidth = $(document).width() - margin;
+    var maxHeight = $(document).height() - margin;
+    if (maxWidth > this._maxWidth)
+        maxWidth = this._maxWidth;
+    if (maxHeight > this._maxHeight)
+        maxHeight = this._maxHeight;
+    return {
+        width: maxWidth,
+        height: maxHeight
+    }
+};
 
 Zoomage.prototype.setImage = function (dataUrl) {
     this._images = [];
@@ -252,21 +271,14 @@ Zoomage.prototype.setImage = function (dataUrl) {
     var self = this;
     var img = new Image();
 
-
-    var maxWidth = $(document).width() - 50;
-    var maxHeight = $(document).height() - 50;
-
-    if (maxWidth > 500)
-        maxWidth = 500;
-    if (maxHeight > 500)
-        maxHeight = 500;
+    var maxSize = this.getMaxSize();
 
     img.onload = function () {
         var coef = 1;
-        if (img.width > maxWidth)
-            coef = (maxWidth / img.width) < coef ? (maxWidth / img.width) : coef;
-        if (img.height > maxHeight)
-            coef = (maxHeight / img.height) < coef ? (maxHeight / img.height) : coef;
+        if (img.width > maxSize.width)
+            coef = (maxSize.width / img.width) < coef ? (maxSize.width / img.width) : coef;
+        if (img.height > maxSize.height)
+            coef = (maxSize.height / img.height) < coef ? (maxSize.height / img.height) : coef;
 
         self.pushFrame(dataUrl, {
             width: img.width * coef,
