@@ -101,14 +101,18 @@ body {
     display: inline-block;
 }
 
+.layer-container {
+    position: absolute;
+    top: -3px;
+    left: -3px;
+}
+
 canvas {
     background-color: #fff;
 }
 
 canvas.layer {
-    position: absolute;
-    top: -3px;
-    left: -3px;
+    /*position: absolute;*/
     border: solid 3px black;
     background-color: transparent !important;
 }
@@ -145,7 +149,11 @@ ul.images-container {
 }
 
 .slider.vertical {
-    -webkit-transform:rotate(90deg);
+    -webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);
 }
 
 .slider::-webkit-slider-thumb {
@@ -158,9 +166,14 @@ ul.images-container {
     border: solid 4px black;
 }
 
+.zoom-slider {
+    position: absolute;
+}
+
 .zoom-slider::-webkit-slider-thumb {
     background: blue;
 }
+
 .delay-slider::-webkit-slider-thumb {
     background: yellow;
 }
